@@ -13,6 +13,9 @@ import Adminsellers from "./screens/adminsellers";
 import Admincouriers from "./screens/admincouriers";
 import Adminusers from "./screens/adminusers";
 import Adminstores from "./screens/adminstores";
+import Adminpickuppointrequests from "./screens/adminpickuppointrequests";
+import Adminpickup from "./screens/adminpickup";
+import Adminreturns from "./screens/Adminreturns";
 
 function App() {
   return (
@@ -28,6 +31,13 @@ function App() {
         <Route path="/admincouriers" element={<Admincouriers />} />
         <Route path="/adminusers" element={<Adminusers />} />
         <Route path="/adminstores" element={<Adminstores />} />
+
+        <Route path="/adminpickup" element={<Adminpickup />} />
+        <Route path="/Adminreturns" element={<Adminreturns />} />
+        <Route
+          path="/adminpickuppointrequests"
+          element={<Adminpickuppointrequests />}
+        />
 
         <Route
           path="/admincourierrequests"

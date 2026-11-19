@@ -46,6 +46,11 @@ function AdminLayout({ title, children }) {
             Заявки курьеров
           </NavLink>
 
+          <NavLink to="/Adminpickuppointrequests">
+            <i className="fa-solid fa-truck"></i>
+            Заявки пункт передачи
+          </NavLink>
+
           <NavLink to="/adminsellers">
             <i className="fa-solid fa-shop"></i>
             Продавцы
@@ -56,6 +61,11 @@ function AdminLayout({ title, children }) {
             Курьеры
           </NavLink>
 
+          <NavLink to="/adminpickup">
+            <i className="fa-solid fa-shop"></i>
+            Пункт передачи
+          </NavLink>
+
           <NavLink to="/adminusers">
             <i className="fa-solid fa-users"></i>
             Пользователи
@@ -64,6 +74,10 @@ function AdminLayout({ title, children }) {
           <NavLink to="/adminstores">
             <i className="fa-solid fa-bag-shopping"></i>
             Магазины
+          </NavLink>
+
+          <NavLink to="/Adminreturns">
+            <i className="fa-solid fa-rotate-left">Возвраты товаров</i>
           </NavLink>
         </nav>
 

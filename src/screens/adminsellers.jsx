@@ -5,9 +5,15 @@ import axios from "axios";
 import AdminLayout from "../components/AdminLayout";
 
 const USERS_URL = "https://6aedd445a677fe0fc14f8ae2.mockapi.io/users";
+const BUSINESS_URL = "https://6aedd445a677fe0fc14f8ae2.mockapi.io/buisness";
 
 function Adminsellers() {
   const navigate = useNavigate();
+
+  const [users, setUsers] = useState([]);
+  const [businesses, setBusinesses] = useState([]);
+  const [editing, setEditing] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const id = localStorage.getItem("id");
@@ -16,10 +22,6 @@ function Adminsellers() {
       navigate("/", { replace: true });
     }
   }, [navigate]);
-
-  const [users, setUsers] = useState([]);
-  const [editing, setEditing] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   // Получить всех продавцов
   const getAllUser = async () => {
@@ -33,8 +35,19 @@ function Adminsellers() {
       }
     } catch (error) {
       console.error("ОШИБКА ПОЛУЧЕНИЯ ПРОДАВЦОВ:", error);
-    } finally {
-      setLoading(false);
+    }
+  };
+
+  // Получить все магазины
+  const getBUSINES = async () => {
+    try {
+      const response = await axios.get(BUSINESS_URL);
+
+      if (response.status === 200) {
+        setBusinesses(response.data);
+      }
+    } catch (error) {
+      console.error("ОШИБКА ПОЛУЧЕНИЯ МАГАЗИНОВ:", error);
     }
   };
 
@@ -58,7 +71,7 @@ function Adminsellers() {
         return;
       }
 
-      getAllUser();
+      await Promise.all([getAllUser(), getBUSINES()]);
     } catch (error) {
       console.error("CHECK USER ERROR:", error);
 
@@ -67,8 +80,9 @@ function Adminsellers() {
         navigate("/", { replace: true });
       } else {
         alert("Ошибка подключения к серверу. Попробуйте ещё раз.");
-        setLoading(false);
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -139,8 +153,9 @@ function Adminsellers() {
               <th>Продавец</th>
               <th>Телефон</th>
               <th>Email</th>
-              <th>Адрес</th>
+              <th>Адрес продавца</th>
               <th>Магазин</th>
+              <th>Адрес магазина</th>
               <th>Баланс</th>
               <th>Действия</th>
             </tr>
@@ -149,52 +164,73 @@ function Adminsellers() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="7">Загрузка продавцов...</td>
+                <td colSpan="8">Загрузка продавцов...</td>
               </tr>
             ) : users.length === 0 ? (
               <tr>
-                <td colSpan="7">Продавцы пока не зарегистрированы</td>
+                <td colSpan="8">Продавцы пока не зарегистрированы</td>
               </tr>
             ) : (
-              users.map((item) => (
-                <tr key={item.id}>
-                  <td>
-                    <strong>
-                      {item.firstname} {item.lastname || "Нет"}
-                    </strong>
-                  </td>
+              users.map((item) => {
+                // Находим магазин этого продавца
+                const business = businesses.find(
+                  (shop) =>
+                    String(shop.userId) === String(item.id) ||
+                    String(shop.sellerId) === String(item.id),
+                );
 
-                  <td>{item.numberphone || "Нет телефона"}</td>
+                return (
+                  <tr key={item.id}>
+                    <td>
+                      <strong>
+                        {item.firstname} {item.lastname || "Нет"}
+                      </strong>
+                    </td>
 
-                  <td>{item.email || "Нет email"}</td>
+                    <td>{item.numberphone || "Нет телефона"}</td>
 
-                  <td>{item.adres || "Не указан"}</td>
+                    <td>{item.email || "Нет email"}</td>
 
-                  <td>{item.buisness || "Не указан"}</td>
+                    <td>{item.adres || "Не указан"}</td>
 
-                  <td>
-                    <b>{item.balance || 0}</b>
-                  </td>
+                    <td>
+                      {business?.name ||
+                        business?.namecompany ||
+                        item.buisness ||
+                        "Не указан"}
+                    </td>
 
-                  <td>
-                    <div className="admin-row-actions">
-                      <button
-                        className="admin-edit-button"
-                        onClick={() => setEditing({ ...item })}
-                      >
-                        <i className="fa-solid fa-pen"></i>
-                      </button>
+                    <td>
+                      {business?.adrescompany ||
+                        business?.adres ||
+                        business?.address ||
+                        "Не указан"}
+                    </td>
 
-                      <button
-                        className="admin-delete-button"
-                        onClick={() => deleteBooking(item)}
-                      >
-                        <i className="fa-solid fa-trash"></i>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
+                    <td>
+                      <b>{item.balance || 0}</b>
+                    </td>
+
+                    <td>
+                      <div className="admin-row-actions">
+                        <button
+                          className="admin-edit-button"
+                          onClick={() => setEditing({ ...item })}
+                        >
+                          <i className="fa-solid fa-pen"></i>
+                        </button>
+
+                        <button
+                          className="admin-delete-button"
+                          onClick={() => deleteBooking(item)}
+                        >
+                          <i className="fa-solid fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>

@@ -20,7 +20,9 @@ function Admin() {
 
       const newApplications = response.data.filter(
         (item) =>
-          (item.role === "seller" || item.role === "courier") &&
+          (item.role === "seller" ||
+            item.role === "courier" ||
+            item.role === "pickuppoint") &&
           item.status === "Ожидание",
       );
 
@@ -159,13 +161,25 @@ function Admin() {
             <h2>{users.filter((item) => item.role === "courier").length}</h2>
           </div>
         </div>
+        <div className="admin-stat-card">
+          <div className="admin-stat-icon orange">
+            <i className="fa-solid fa-box"></i>
+          </div>
+
+          <div>
+            <p>Пункты передачи</p>
+            <h2>
+              {users.filter((item) => item.role === "pickuppoint").length}
+            </h2>
+          </div>
+        </div>
       </div>
 
       <div className="admin-section">
         <div className="admin-section-heading">
           <div>
             <h3>Новые заявки</h3>
-            <p>Последние заявки от продавцов и курьеров</p>
+            <p>Последние заявки от продавцов, курьеров и пунктов передачи</p>
           </div>
 
           <button
@@ -202,7 +216,11 @@ function Admin() {
 
                     <td>
                       <span className="admin-type">
-                        {item.role === "seller" ? "Продавец" : "Курьер"}
+                        {item.role === "seller"
+                          ? "Продавец"
+                          : item.role === "courier"
+                            ? "Курьер"
+                            : "Пункт передачи"}
                       </span>
                     </td>
 
@@ -219,7 +237,9 @@ function Admin() {
                           navigate(
                             item.role === "seller"
                               ? "/adminsellerrequests"
-                              : "/admincourierrequests",
+                              : item.role === "courier"
+                                ? "/admincourierrequests"
+                                : "/adminpickuppointrequests",
                           )
                         }
                       >
